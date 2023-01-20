@@ -46,7 +46,30 @@
         return false;
       }
     }
-  
+    
+    public function updateMission($data){
+      $this->db->query('UPDATE missions SET idMission = :idMission, dateDebut = :dateDebut, dateFin = :dateFin,titre = :titre,
+                              description = :description, nomCode = :nomCode, idPays = :idPays, idTypeMission = :idTypeMission,
+                              idStatut = :idStatut, idSpecialite = :idSpecialite WHERE idMission = :idMission');
+      // Bind values
+      $this->db->bind(':idMission', $data['idMission']);
+      $this->db->bind(':dateDebut', $data['dateDebut']);
+      $this->db->bind(':dateFin', $data['dateFin']);
+      $this->db->bind(':titre', $data['titre']);
+      $this->db->bind(':description', $data['description']);
+      $this->db->bind(':nomCode', $data['nomCode']);
+      $this->db->bind(':idPays', $data['idPays']);
+      $this->db->bind(':idTypeMission', $data['idTypeMission']);
+      $this->db->bind(':idStatut', $data['idStatut']);
+      $this->db->bind(':idSpecialite', $data['idSpecialite']);
+
+      // Execute
+      if($this->db->execute()){
+        return true;
+      } else {
+        return false;
+      }
+    }
 
     public function getMissionById($id){
       $this->db->query('SELECT *,mi.idMission, mi.dateDebut, mi.dateFin, mi.titre, 
@@ -149,5 +172,18 @@
       $results = $this->db->resultSet();
 
       return $results;
+    }
+
+    public function delete($id){
+      $this->db->query('DELETE FROM missions WHERE idMission = :id');
+      // Bind values
+      $this->db->bind(':id', $id);
+
+      // Execute
+      if($this->db->execute()){
+        return true;
+      } else {
+        return false;
+      }
     }
 }

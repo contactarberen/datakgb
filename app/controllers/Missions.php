@@ -112,6 +112,105 @@
       }
     }
 
+    public function edit($id){
+      if(!isLoggedIn()){
+        redirect('admins/login');
+      }
+      if($_SERVER['REQUEST_METHOD'] == 'POST'){
+        // Sanitize POST array
+        $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+
+        $data = [
+          'idMission' => $id,
+          'dateDebut' => trim($_POST['dateDebut']),
+          'dateFin' => trim($_POST['dateFin']),
+          'titre' => trim($_POST['titre']),
+          'description' => trim($_POST['description']),
+          'nomCode' => trim($_POST['nomCode']),
+          'idPays' => trim($_POST['idPays']),
+          'idTypeMission' => trim($_POST['idTypeMission']),
+          'idStatut' => trim($_POST['idStatut']),
+          'idSpecialite' => trim($_POST['idSpecialite']),
+          'admin_id' => $_SESSION['admin_id'],
+          'dateDebut_err' => '',
+          'dateFin_err' => '',
+          'titre_err' => '',
+          'description_err' => '',
+          'nomCode_err' => '',
+          'idPays_err' => '',
+          'idTypeMission_err' => '',
+          'idStatut_err' => '',
+          'idSpecialite_err' => ''
+        ];
+
+        // Validate data
+        if(empty($data['dateDebut'])){
+          $data['dateDebut_err'] = 'Veuillez entrer une date de début';
+        }
+        if(empty($data['dateFin'])){
+          $data['dateFin_err'] = 'Veuillez entrer une date de fin';
+        }
+        if(empty($data['titre'])){
+          $data['titre_err'] = 'Veuillez entrer un titre';
+        }
+        if(empty($data['description'])){
+          $data['description_err'] = 'Veuillez entrer une description';
+        }
+        if(empty($data['nomCode'])){
+          $data['nomCode_err'] = 'Veuillez entrer un nom de code';
+        }
+        if(empty($data['idPays'])){
+          $data['idPays_err'] = 'Veuillez entrer un id de pays';
+        }
+        if(empty($data['idTypeMission'])){
+          $data['idTypeMission_err'] = 'Veuillez entrer un id de type de mission';
+        }
+        if(empty($data['idStatut'])){
+          $data['idStatut_err'] = 'Veuillez entrer un id de statut';
+        }
+        if(empty($data['idSpecialite'])){
+          $data['idSpecialite_err'] = 'Veuillez entrer un id de specialite';
+        }
+
+        // Make sure no errors
+        if(empty($data['dateDebut_err']) && empty($data['dateFin_err']) &&
+           empty($data['titre_err']) && empty($data['description_err']) &&
+           empty($data['nomCode_err']) && empty($data['idPays_err']) &&
+           empty($data['idTypeMission_err']) && empty($data['idStatut_err']) &&
+           empty($data['idSpecialite_err'])){
+          // Validated
+          if($this->missionModel->updateMission($data)){
+            flash('post_message', 'Mission modifié');
+            redirect('missions');
+          } else {
+            die('Something went wrong');
+          }
+        } else {
+          // Load view with errors
+          $this->view('missions/edit', $data);
+        }
+
+      } else {
+        // Get existing mission from model
+        $mission = $this->missionModel->getMissionById($id);
+
+        $data = [
+          'idMission' => $mission->idMission,
+          'dateDebut' => $mission->dateDebut,
+          'dateFin' => $mission->dateFin,
+          'titre' => $mission->titre,
+          'description' => $mission->description,
+          'nomCode' => $mission->nomCode,
+          'idPays' => $mission->idPays,
+          'idTypeMission' => $mission->idTypeMission,
+          'idStatut' => $mission->idStatut,
+          'idSpecialite' => $mission->idSpecialite
+        ];
+  
+        $this->view('missions/edit', $data);
+      }
+    }
+
     public function show($id){
       $mission = $this->missionModel->getMissionById($id);
       $missionAgent = $this->missionModel->getMissionAgentById($id);
@@ -130,5 +229,19 @@
       ];
 
       $this->view('missions/show', $data);
+    }
+
+    public function delete($id){
+      if($_SERVER['REQUEST_METHOD'] == 'POST'){
+        // Get existing post from model
+        if($this->missionModel->delete($id)){
+          flash('post_message', 'Post Removed');
+          redirect('missions');
+        } else {
+          die('Something went wrong');
+        }
+      } else {
+        redirect('missions');
+      }
     }
 }
