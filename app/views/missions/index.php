@@ -85,11 +85,13 @@
           <td><?php echo $mission->nomPays; ?></td>
           <td><a href="<?php echo URLROOT; ?>/missions/show/<?php echo $mission->idMission; ?>" class="btn btn-dark">Détails</a></td>
           <td><a href="<?php echo URLROOT; ?>/missions/edit/<?php echo $mission->idMission; ?>" class="btn btn-dark">Editer</a></td>
-          <td>
-                <form class="pull-right" action="<?php echo URLROOT; ?>/missions/delete/<?php echo $mission->idMission; ?>" method="post">
-                <input type="submit" value="Supprimer" class="btn btn-danger">
-                </form>
+          <?php if(isset($_SESSION['admin_id'])) : ?>
+            <td>
+                  <form class="pull-right" action="<?php echo URLROOT; ?>/missions/delete/<?php echo $mission->idMission; ?>" method="post">
+                  <input type="submit" value="Supprimer" class="btn btn-danger">
+                  </form>
             </td>
+          <?php endif; ?>
         </tr>
       <?php endforeach; ?>
     </tbody>
